@@ -10,7 +10,7 @@
 <h1>
 <b><font color="#00CC00">J</font><font color="#FF0000">U</font><font color="#000000">nit</font> <font size=+3>Test
 Infected: Programmers Love Writing Tests</font></b></h1>
-<br>Note: this article describes JUnit 3.8.x.
+<br>Note: this article describes JUnit 4.x.
 
 <hr WIDTH="100%">
 <p>Testing is not closely integrated with development. This prevents you
@@ -115,15 +115,16 @@ MoneyTest in the same package as the classes under test. In this way a
 test case has access to the package private methods. We add a test method
 testSimpleAdd, that will exercise the simple version of <a href="#MoneyAdd">Money.add()</a>
 above. A JUnit test method is an ordinary method without any parameters.
-<pre><a NAME="class MoneyTest"></a><tt>public class MoneyTest extends TestCase {
-&nbsp;&nbsp;&nbsp; //…
-&nbsp;&nbsp;&nbsp; public void testSimpleAdd() {
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Money m12CHF= new Money(12, "CHF");&nbsp; //&nbsp;<a NAME="MoneyTest1"></a>(1)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Money m14CHF= new Money(14, "CHF");&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Money expected= new Money(26, "CHF");
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Money result= m12CHF.add(m14CHF);&nbsp;&nbsp;&nbsp; //&nbsp;<a NAME="MoneyTest2"></a>(2)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Assert.assertTrue(expected.equals(result));&nbsp;&nbsp;&nbsp;&nbsp; //&nbsp;<a NAME="MoneyTest3"></a>(3)
-&nbsp;&nbsp;&nbsp; }
+<pre><a NAME="class MoneyTest"></a><tt>public class MoneyTest {
+    @Test
+    public void testSimpleAdd() {
+        Money m12CHF= new Money(12, "CHF");  // <a NAME="MoneyTest1"></a>(1)
+        Money m14CHF= new Money(14, "CHF");
+
+        Money expected= new Money(26, "CHF");
+        Money result= m12CHF.add(m14CHF);    // <a NAME="MoneyTest2"></a>(2)
+        Assert.assertTrue(expected.equals(result));     // <a NAME="MoneyTest3"></a>(3)
+    }
 }</tt></pre>
 The testSimpleAdd() test case consists of:
 <ol>
@@ -143,15 +144,17 @@ Before we can verify the result we have to digress a little since we need
 a way to test that two Money objects are equal. The Java idiom to do so
 is to override the method <i>equals</i> defined in Object. Before we implement
 equals let's a write a test for equals in MoneyTest.
-<pre><tt>public void testEquals() {
-&nbsp;&nbsp;&nbsp; Money m12CHF= new Money(12, "CHF");
-&nbsp;&nbsp;&nbsp; Money m14CHF= new Money(14, "CHF");
+<pre><tt>
+    @Test
+    public void testEquals() {
+        Money m12CHF = new Money(12, "CHF");
+        Money m14CHF = new Money(14, "CHF");
 
-&nbsp;&nbsp;&nbsp; Assert.assertTrue(!m12CHF.equals(null));
-&nbsp;&nbsp;&nbsp; Assert.assertEquals(m12CHF, m12CHF);
-&nbsp;&nbsp;&nbsp; Assert.assertEquals(m12CHF, new Money(12, "CHF")); //&nbsp;<a NAME="TestEquals1"></a>(1)
-&nbsp;&nbsp;&nbsp; Assert.assertTrue(!m12CHF.equals(m14CHF));
-}</tt></pre>
+        Assert.assertTrue(!m12CHF.equals(null));
+        Assert.assertEquals(m12CHF, m12CHF);
+        Assert.assertEquals(m12CHF, new Money(12, "CHF")); // <a NAME="TestEquals1"></a>(1)
+        Assert.assertTrue(!m12CHF.equals(m14CHF));
+    }</tt></pre>
 The equals method in Object returns true when both objects are the same.
 However, Money is a <i>value object</i>. Two Monies are considered equal
 if they have the same currency and value. To test this property we have
@@ -193,28 +196,30 @@ the setUp method. The symmetric operation to setUp is tearDown which you
 can override to clean up the test fixture at the end of a test. Each test
 runs in its own fixture and JUnit calls setUp and tearDown for each test
 so that there can be no side effects among test runs.
-<pre><tt>public class MoneyTest extends TestCase {
-&nbsp;&nbsp;&nbsp; private Money f12CHF;
-&nbsp;&nbsp;&nbsp; private Money f14CHF;&nbsp;&nbsp;&nbsp;
+<pre><tt>
+    public class MoneyTest {
+    private Money f12CHF;
+    private Money f14CHF;
 
-&nbsp;&nbsp;&nbsp; protected void setUp() {
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; f12CHF= new Money(12, "CHF");
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; f14CHF= new Money(14, "CHF");
-&nbsp;&nbsp;&nbsp; }
+    @Before
+    public void setUp() {
+        f12CHF= new Money(12, "CHF");
+        f14CHF= new Money(14, "CHF");
+    }
 }</tt></pre>
 We can rewrite the two test case methods, removing the common setup code:
-<pre><tt>public void testEquals() {
-&nbsp;&nbsp;&nbsp; Assert.assertTrue(!f12CHF.equals(null));
-&nbsp;&nbsp;&nbsp; Assert.assertEquals(f12CHF, f12CHF);
-&nbsp;&nbsp;&nbsp; Assert.assertEquals(f12CHF, new Money(12, "CHF"));
-&nbsp;&nbsp;&nbsp; Assert.assertTrue(!f12CHF.equals(f14CHF));
-}
+<pre><tt> public void testEquals() {
+        Assert.assertTrue(!f12CHF.equals(null));
+        Assert.assertEquals(f12CHF, f12CHF);
+        Assert.assertEquals(f12CHF, new Money(12, "CHF"));
+        Assert.assertTrue(!f12CHF.equals(f14CHF));
+    }
 
-public void testSimpleAdd() {
-&nbsp;&nbsp;&nbsp; Money expected= new Money(26, "CHF");
-&nbsp;&nbsp;&nbsp; Money result= f12CHF.add(f14CHF);
-&nbsp;&nbsp;&nbsp; Assert.assertTrue(expected.equals(result));
-}</tt></pre>
+    public void testSimpleAdd() {
+        Money expected = new Money(26, "CHF");
+        Money result = f12CHF.add(f14CHF);
+        Assert.assertTrue(expected.equals(result));
+    }</tt></pre>
 Two additional steps are needed to run the two test cases:
 <ol>
 <li>
