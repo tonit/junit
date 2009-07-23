@@ -1,0 +1,15 @@
+update to junit 4.x
+remove anything from 3 and before
+switch from setting up suites and using the junit GUI to describing IDE support
+Switch approach from code, test, code, test to TDD
+Red, Green, Refactor
+Test behaviour, not methods
+assertThat?
+
+Pointers to:
+Tdd and design    
+CI
+mention brittleness - are tests so couple to implementation that it's hard to change
+reliability - sporadic test failures, maybe even some common ones to avoid
+Different types of tests - unit, integration, acceptance
+Outside in. 
