@@ -15,8 +15,10 @@ import org.junit.runners.model.Statement;
 import org.junit.runners.model.TestClass;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Theories extends BlockJUnit4ClassRunner {
@@ -58,14 +60,44 @@ public class Theories extends BlockJUnit4ClassRunner {
 		List<FrameworkMethod> testMethods= super.computeTestMethods();
 		List<FrameworkMethod> theoryMethods= getTestClass().getAnnotatedMethods(Theory.class);
 		testMethods.removeAll(theoryMethods);
+        List<FrameworkMethod> discreteTheoryMethods= new ArrayList<FrameworkMethod>(theoryMethods.size());
+        Iterator<FrameworkMethod> it= theoryMethods.iterator();
+        while(it.hasNext()) {
+            FrameworkMethod method= it.next();
+            if (runsDiscretely(method)) {
+                it.remove();
+                // TODO: decorate the theoryMethods with the applicable data points
+                // This requires evaluating the assignments here...
+                discreteTheoryMethods.add(new TheoryMethod(method.getMethod(), "params"));
+            }
+        }
+
 		testMethods.addAll(theoryMethods);
+        testMethods.addAll(discreteTheoryMethods);
 		return testMethods;
 	}
+
+    private boolean runsDiscretely(FrameworkMethod method) {
+        Theory annotation= method.getAnnotation(Theory.class);
+        return annotation != null && annotation.runDiscretely();
+    }
 
 	@Override
 	public Statement methodBlock(final FrameworkMethod method) {
 		return new TheoryAnchor(method, getTestClass());
 	}
+
+    private static class TheoryMethod extends FrameworkMethod {
+        private final String fName;
+        public TheoryMethod(Method method, String params) {
+            super(method);
+            fName= String.format("%s [%s]", getMethod().getName(), params);
+        }
+        @Override
+        public String getName() {
+            return fName;
+        }
+    }
 
 	public static class TheoryAnchor extends Statement {
 		private int successes= 0;
