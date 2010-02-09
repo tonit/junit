@@ -3,12 +3,6 @@
  */
 package org.junit.experimental.theories;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.experimental.theories.PotentialAssignment.CouldNotGenerateValueException;
 import org.junit.experimental.theories.internal.Assignments;
@@ -19,6 +13,11 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 import org.junit.runners.model.TestClass;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Theories extends BlockJUnit4ClassRunner {
 	public Theories(Class<?> klass) throws InitializationError {
@@ -36,7 +35,8 @@ public class Theories extends BlockJUnit4ClassRunner {
 		
 		for (Field each : fields)
 			if (each.getAnnotation(DataPoint.class) != null && !Modifier.isStatic(each.getModifiers()))
-				errors.add(new Error("DataPoint field " + each.getName() + " must be static"));
+                //noinspection ThrowableInstanceNeverThrown
+                errors.add(new Error("DataPoint field " + each.getName() + " must be static"));
 	}
 	
 	@Override
@@ -105,8 +105,7 @@ public class Theories extends BlockJUnit4ClassRunner {
 		}
 
 		protected void runWithIncompleteAssignment(Assignments incomplete)
-				throws InstantiationException, IllegalAccessException,
-				Throwable {
+				throws Throwable {
 			for (PotentialAssignment source : incomplete
 					.potentialsForNextUnassigned()) {
 				runWithAssignment(incomplete.assignNext(source));
@@ -114,8 +113,7 @@ public class Theories extends BlockJUnit4ClassRunner {
 		}
 
 		protected void runWithCompleteAssignment(final Assignments complete)
-				throws InstantiationException, IllegalAccessException,
-				InvocationTargetException, NoSuchMethodException, Throwable {
+				throws Throwable {
 			new BlockJUnit4ClassRunner(getTestClass().getJavaClass()) {
 				@Override
 				protected void collectInitializationErrors(
@@ -184,13 +182,11 @@ public class Theories extends BlockJUnit4ClassRunner {
 					params);
 		}
 
-		private boolean nullsOk() {
-			Theory annotation= fTestMethod.getMethod().getAnnotation(
-					Theory.class);
-			if (annotation == null)
-				return false;
-			return annotation.nullsAccepted();
-		}
+        private boolean nullsOk() {
+            Theory annotation= fTestMethod.getMethod().getAnnotation(
+                    Theory.class);
+            return annotation != null && annotation.nullsAccepted();
+        }
 
 		protected void handleDataPointSuccess() {
 			successes++;
