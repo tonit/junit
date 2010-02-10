@@ -18,6 +18,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -65,10 +66,13 @@ public class Theories extends BlockJUnit4ClassRunner {
         while(it.hasNext()) {
             FrameworkMethod method= it.next();
             if (runsDiscretely(method)) {
-                it.remove();
-                // TODO: decorate the theoryMethods with the applicable data points
-                // This requires evaluating the assignments here...
-                discreteTheoryMethods.add(new TheoryMethod(method.getMethod(), "params"));
+                try {
+                    discreteTheoryMethods.addAll(TheoryMethod.createFromMethod(method.getMethod(),getTestClass()));
+                    it.remove();
+                } catch (Throwable problem) {
+                    // the theory wasn't removed from the original list, so we will ignore it for now.
+                    // TODO: proper handling here.  Is there an initalization exception?
+                }
             }
         }
 
@@ -89,13 +93,54 @@ public class Theories extends BlockJUnit4ClassRunner {
 
     private static class TheoryMethod extends FrameworkMethod {
         private final String fName;
-        public TheoryMethod(Method method, String params) {
+        private final Assignments fAssignments;
+        public TheoryMethod(Method method, Assignments assignments) throws Throwable {
             super(method);
-            fName= String.format("%s [%s]", getMethod().getName(), params);
+            fAssignments = assignments;
+            Theory annotation= getMethod().getAnnotation(Theory.class);
+            boolean nullsOK=  annotation != null && annotation.nullsAccepted();
+            fName= String.format("%s [%s]", getMethod().getName(), assignments.getArgumentStrings(nullsOK));
         }
         @Override
         public String getName() {
             return fName;
+        }
+
+        public Assignments getAssignments() {
+            return fAssignments;
+        }
+
+        public static Collection<TheoryMethod> createFromMethod(Method testMethod, TestClass testClass) throws Throwable {
+            Collection<TheoryMethod> discreteTests = new ArrayList<TheoryMethod>(17);
+
+            buildFromAssignment(testMethod, Assignments.allUnassigned(testMethod, testClass), discreteTests);
+
+            if (discreteTests.size() == 0)
+                Assert.fail("Never found parameters that satisfied method signatures.");
+            return discreteTests;
+        }
+
+        private static void buildFromAssignment(Method testMethod, Assignments assignments,
+                                                Collection<TheoryMethod> discreteTests) throws Throwable {
+            if(!assignments.isComplete()) {
+                buildFromIncompleteAssignment(testMethod, assignments, discreteTests);
+            } else {
+                buildFromCompleteAssignment(testMethod, assignments, discreteTests);
+            }
+        }
+
+        private static void buildFromIncompleteAssignment(Method testMethod,
+                                                          Assignments incomplete,
+                                                          Collection<TheoryMethod> discreteTests) throws Throwable {
+            for (PotentialAssignment source : incomplete.potentialsForNextUnassigned()) {
+                buildFromAssignment(testMethod, incomplete.assignNext(source), discreteTests) ;
+            }
+        }
+
+        private static void buildFromCompleteAssignment(Method testMethod,
+                                                        Assignments assignments,
+                                                        Collection<TheoryMethod> discreteTests) throws Throwable {
+            discreteTests.add(new TheoryMethod(testMethod, assignments));
         }
     }
 
@@ -118,12 +163,17 @@ public class Theories extends BlockJUnit4ClassRunner {
 
 		@Override
 		public void evaluate() throws Throwable {
-			runWithAssignment(Assignments.allUnassigned(
-					fTestMethod.getMethod(), getTestClass()));
+            // If we already made the assignments, use them
+            if ( fTestMethod instanceof TheoryMethod ) {
+                runWithCompleteAssignment(((TheoryMethod)fTestMethod).getAssignments());
+            } else {
+                // otherwise compute and use them now
+			    runWithAssignment(Assignments.allUnassigned(
+				    	fTestMethod.getMethod(), getTestClass()));
+            }
 
 			if (successes == 0)
-				Assert
-						.fail("Never found parameters that satisfied method assumptions.  Violated assumptions: "
+				Assert.fail("Never found parameters that satisfied method assumptions.  Violated assumptions: "
 								+ fInvalidParameters);
 		}
 
