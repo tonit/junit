@@ -11,6 +11,7 @@ import org.junit.internal.AssumptionViolatedException;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
+import org.junit.runners.model.TestClass;
 
 public class StubbedTheories extends Theories {
 	public StubbedTheories(Class<?> klass) throws InitializationError {
@@ -19,12 +20,12 @@ public class StubbedTheories extends Theories {
 
 	@Override
 	public Statement methodBlock(FrameworkMethod method) {
-		return new StubbedTheoryAnchor(method);
+		return new StubbedTheoryAnchor(method, getTestClass());
 	}
 	
 	public class StubbedTheoryAnchor extends TheoryAnchor {
-		public StubbedTheoryAnchor(FrameworkMethod method) {
-			super(method);
+		public StubbedTheoryAnchor(FrameworkMethod method, TestClass testClass) {
+			super(method, testClass);
 		}
 
 		private List<GuesserQueue> queues= new ArrayList<GuesserQueue>();
@@ -38,8 +39,7 @@ public class StubbedTheories extends Theories {
 
 		@Override
 		protected void runWithIncompleteAssignment(Assignments incomplete)
-				throws InstantiationException, IllegalAccessException,
-				Throwable {
+				throws Throwable {
 			GuesserQueue guessers= createGuesserQueue(incomplete);
 			queues.add(guessers);
 			while (!guessers.isEmpty())
