@@ -29,6 +29,7 @@ import org.junit.tests.experimental.rules.TempFolderRuleTest;
 import org.junit.tests.experimental.rules.TimeoutRuleTest;
 import org.junit.tests.experimental.rules.VerifierRuleTest;
 import org.junit.tests.experimental.theories.AllMembersSupplierTest;
+import org.junit.tests.experimental.theories.runner.DiscreteTheories;
 import org.junit.tests.experimental.theories.runner.TheoriesPerformanceTest;
 import org.junit.tests.junit3compatibility.AllTestsTest;
 import org.junit.tests.junit3compatibility.ClassRequestTest;
@@ -135,7 +136,8 @@ import org.junit.tests.validation.ValidationTest;
 	TempFolderRuleTest.class,
 	ExternalResourceRuleTest.class,
 	VerifierRuleTest.class,
-	CategoryTest.class
+	CategoryTest.class,
+    DiscreteTheories.class
 })
 public class AllTests {
 	public static Test suite() {

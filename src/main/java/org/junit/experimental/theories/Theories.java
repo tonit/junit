@@ -99,8 +99,27 @@ public class Theories extends BlockJUnit4ClassRunner {
             fAssignments = assignments;
             Theory annotation= getMethod().getAnnotation(Theory.class);
             boolean nullsOK=  annotation != null && annotation.nullsAccepted();
-            fName= String.format("%s [%s]", getMethod().getName(), assignments.getArgumentStrings(nullsOK));
+            fName= buildName(method,assignments.getMethodArguments(nullsOK));
         }
+
+        private String buildName(Method method, Object[] assignments) {
+            StringBuilder builder = new StringBuilder(method.getName());
+
+            boolean first = true;
+            builder.append("[");
+            for(Object obj : assignments) {
+                if (first) {
+                    first= false;
+                } else {
+                    builder.append(",");
+                }
+                builder.append(obj);
+            }
+            builder.append("]");
+
+            return builder.toString();
+        }
+
         @Override
         public String getName() {
             return fName;
