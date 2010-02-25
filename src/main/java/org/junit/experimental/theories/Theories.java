@@ -22,6 +22,17 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+/**
+ * Theories allow you to perform tests that ensure contracts or consistent
+ * behavior across a large set of data.  They differ from ParameterizedTests
+ * which allow you to provide a discrete set of data and values for your
+ * assertions.  Theories dynamically assign the data points to your theories
+ * based on the type.  Every combination possible will be given to your theory.
+ *
+ * You can control the relationship between the arguments using assumptions.
+ * A failed assumption in a Theory means that the data needed to be filtered
+ * out.
+ */
 public class Theories extends BlockJUnit4ClassRunner {
 	public Theories(Class<?> klass) throws InitializationError {
 		super(klass);
