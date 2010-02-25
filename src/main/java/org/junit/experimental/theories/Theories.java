@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package org.junit.experimental.theories;
 
@@ -32,21 +32,21 @@ public class Theories extends BlockJUnit4ClassRunner {
 		super.collectInitializationErrors(errors);
 		validateDataPointFields(errors);
 	}
-	
+
 	private void validateDataPointFields(List<Throwable> errors) {
 		Field[] fields= getTestClass().getJavaClass().getDeclaredFields();
-		
+
 		for (Field each : fields)
 			if (each.getAnnotation(DataPoint.class) != null && !Modifier.isStatic(each.getModifiers()))
-                //noinspection ThrowableInstanceNeverThrown
-                errors.add(new Error("DataPoint field " + each.getName() + " must be static"));
+				//noinspection ThrowableInstanceNeverThrown
+				errors.add(new Error("DataPoint field " + each.getName() + " must be static"));
 	}
-	
+
 	@Override
 	protected void validateConstructor(List<Throwable> errors) {
 		validateOnlyOneConstructor(errors);
 	}
-	
+
 	@Override
 	protected void validateTestMethods(List<Throwable> errors) {
 		for (FrameworkMethod each : computeTestMethods())
@@ -55,145 +55,145 @@ public class Theories extends BlockJUnit4ClassRunner {
 			else
 				each.validatePublicVoidNoArg(false, errors);
 	}
-	
+
 	@Override
 	protected List<FrameworkMethod> computeTestMethods() {
 		List<FrameworkMethod> testMethods= super.computeTestMethods();
 		List<FrameworkMethod> theoryMethods= getTestClass().getAnnotatedMethods(Theory.class);
 		testMethods.removeAll(theoryMethods);
-        List<FrameworkMethod> discreteTheoryMethods= new ArrayList<FrameworkMethod>(theoryMethods.size());
-        Iterator<FrameworkMethod> it= theoryMethods.iterator();
-        while(it.hasNext()) {
-            FrameworkMethod method= it.next();
-            if (runsDiscretely(method)) {
-                try {
-                    discreteTheoryMethods.addAll(TheoryMethod.createFromMethod(method.getMethod(),getTestClass()));
-                    it.remove();
-                } catch (Throwable problem) {
-                    // the theory wasn't removed from the original list, so we will ignore it for now.
-                    // TODO: proper handling here.  Is there an initalization exception?
-                }
-            }
-        }
+		List<FrameworkMethod> discreteTheoryMethods= new ArrayList<FrameworkMethod>(theoryMethods.size());
+		Iterator<FrameworkMethod> it= theoryMethods.iterator();
+		while(it.hasNext()) {
+			FrameworkMethod method= it.next();
+			if (runsDiscretely(method)) {
+				try {
+					discreteTheoryMethods.addAll(TheoryMethod.createFromMethod(method.getMethod(),getTestClass()));
+					it.remove();
+				} catch (Throwable problem) {
+					// the theory wasn't removed from the original list, so we will ignore it for now.
+					// TODO: proper handling here.  Is there an initalization exception?
+				}
+			}
+		}
 
 		testMethods.addAll(theoryMethods);
-        testMethods.addAll(discreteTheoryMethods);
+		testMethods.addAll(discreteTheoryMethods);
 		return testMethods;
 	}
 
-    private boolean runsDiscretely(FrameworkMethod method) {
-        Theory annotation= method.getAnnotation(Theory.class);
-        return annotation != null && annotation.runDiscretely();
-    }
+	private boolean runsDiscretely(FrameworkMethod method) {
+		Theory annotation= method.getAnnotation(Theory.class);
+		return annotation != null && annotation.runDiscretely();
+	}
 
 	@Override
 	public Statement methodBlock(final FrameworkMethod method) {
 		return new TheoryAnchor(method, getTestClass());
 	}
 
-    private static class TheoryMethod extends FrameworkMethod {
-        private final String fName;
-        private final Assignments fAssignments;
-        public TheoryMethod(Method method, Assignments assignments) throws Throwable {
-            super(method);
-            fAssignments = assignments;
-            Theory annotation= getMethod().getAnnotation(Theory.class);
-            boolean nullsOK=  annotation != null && annotation.nullsAccepted();
-            fName= buildName(method,assignments.getMethodArguments(nullsOK));
-        }
+	private static class TheoryMethod extends FrameworkMethod {
+		private final String fName;
+		private final Assignments fAssignments;
+		public TheoryMethod(Method method, Assignments assignments) throws Throwable {
+			super(method);
+			fAssignments = assignments;
+			Theory annotation= getMethod().getAnnotation(Theory.class);
+			boolean nullsOK=  annotation != null && annotation.nullsAccepted();
+			fName= buildName(method,assignments.getMethodArguments(nullsOK));
+		}
 
-        private String buildName(Method method, Object[] assignments) {
-            StringBuilder builder = new StringBuilder(method.getName());
+		private String buildName(Method method, Object[] assignments) {
+			StringBuilder builder = new StringBuilder(method.getName());
 
-            boolean first = true;
-            builder.append("[");
-            for(Object obj : assignments) {
-                if (first) {
-                    first= false;
-                } else {
-                    builder.append(",");
-                }
-                builder.append(obj);
-            }
-            builder.append("]");
+			boolean first = true;
+			builder.append("[");
+			for(Object obj : assignments) {
+				if (first) {
+					first= false;
+				} else {
+					builder.append(",");
+				}
+				builder.append(obj);
+			}
+			builder.append("]");
 
-            return builder.toString();
-        }
+			return builder.toString();
+		}
 
-        @Override
-        public String getName() {
-            return fName;
-        }
+		@Override
+		public String getName() {
+			return fName;
+		}
 
-        public Assignments getAssignments() {
-            return fAssignments;
-        }
+		public Assignments getAssignments() {
+			return fAssignments;
+		}
 
-        public static Collection<TheoryMethod> createFromMethod(Method testMethod, TestClass testClass) throws Throwable {
-            Collection<TheoryMethod> discreteTests = new ArrayList<TheoryMethod>(17);
+		public static Collection<TheoryMethod> createFromMethod(Method testMethod, TestClass testClass) throws Throwable {
+			Collection<TheoryMethod> discreteTests = new ArrayList<TheoryMethod>(17);
 
-            buildFromAssignment(testMethod, Assignments.allUnassigned(testMethod, testClass), discreteTests);
+			buildFromAssignment(testMethod, Assignments.allUnassigned(testMethod, testClass), discreteTests);
 
-            if (discreteTests.size() == 0)
-                Assert.fail("Never found parameters that satisfied method signatures.");
-            return discreteTests;
-        }
+			if (discreteTests.size() == 0)
+				Assert.fail("Never found parameters that satisfied method signatures.");
+			return discreteTests;
+		}
 
-        private static void buildFromAssignment(Method testMethod, Assignments assignments,
-                                                Collection<TheoryMethod> discreteTests) throws Throwable {
-            if(!assignments.isComplete()) {
-                buildFromIncompleteAssignment(testMethod, assignments, discreteTests);
-            } else {
-                buildFromCompleteAssignment(testMethod, assignments, discreteTests);
-            }
-        }
+		private static void buildFromAssignment(Method testMethod, Assignments assignments,
+												Collection<TheoryMethod> discreteTests) throws Throwable {
+			if(!assignments.isComplete()) {
+				buildFromIncompleteAssignment(testMethod, assignments, discreteTests);
+			} else {
+				buildFromCompleteAssignment(testMethod, assignments, discreteTests);
+			}
+		}
 
-        private static void buildFromIncompleteAssignment(Method testMethod,
-                                                          Assignments incomplete,
-                                                          Collection<TheoryMethod> discreteTests) throws Throwable {
-            for (PotentialAssignment source : incomplete.potentialsForNextUnassigned()) {
-                buildFromAssignment(testMethod, incomplete.assignNext(source), discreteTests) ;
-            }
-        }
+		private static void buildFromIncompleteAssignment(Method testMethod,
+														  Assignments incomplete,
+														  Collection<TheoryMethod> discreteTests) throws Throwable {
+			for (PotentialAssignment source : incomplete.potentialsForNextUnassigned()) {
+				buildFromAssignment(testMethod, incomplete.assignNext(source), discreteTests) ;
+			}
+		}
 
-        private static void buildFromCompleteAssignment(Method testMethod,
-                                                        Assignments assignments,
-                                                        Collection<TheoryMethod> discreteTests) throws Throwable {
-            discreteTests.add(new TheoryMethod(testMethod, assignments));
-        }
-    }
+		private static void buildFromCompleteAssignment(Method testMethod,
+														Assignments assignments,
+														Collection<TheoryMethod> discreteTests) throws Throwable {
+			discreteTests.add(new TheoryMethod(testMethod, assignments));
+		}
+	}
 
 	public static class TheoryAnchor extends Statement {
 		private int successes= 0;
 
 		private FrameworkMethod fTestMethod;
-        private TestClass fTestClass;
+		private TestClass fTestClass;
 
 		private List<AssumptionViolatedException> fInvalidParameters= new ArrayList<AssumptionViolatedException>();
 
 		public TheoryAnchor(FrameworkMethod method, TestClass testClass) {
 			fTestMethod= method;
-            fTestClass= testClass;
+			fTestClass= testClass;
 		}
 
-        private TestClass getTestClass() {
-            return fTestClass;
-        }
+		private TestClass getTestClass() {
+			return fTestClass;
+		}
 
 		@Override
 		public void evaluate() throws Throwable {
-            // If we already made the assignments, use them
-            if ( fTestMethod instanceof TheoryMethod ) {
-                runWithCompleteAssignment(((TheoryMethod)fTestMethod).getAssignments());
-            } else {
-                // otherwise compute and use them now
-			    runWithAssignment(Assignments.allUnassigned(
-				    	fTestMethod.getMethod(), getTestClass()));
-            }
+			// If we already made the assignments, use them
+			if ( fTestMethod instanceof TheoryMethod ) {
+				runWithCompleteAssignment(((TheoryMethod)fTestMethod).getAssignments());
+			} else {
+				// otherwise compute and use them now
+				runWithAssignment(Assignments.allUnassigned(
+						fTestMethod.getMethod(), getTestClass()));
+			}
 
 			if (successes == 0)
 				Assert.fail("Never found parameters that satisfied method assumptions.  Violated assumptions: "
-								+ fInvalidParameters);
+						+ fInvalidParameters);
 		}
 
 		protected void runWithAssignment(Assignments parameterAssignment)
@@ -283,11 +283,11 @@ public class Theories extends BlockJUnit4ClassRunner {
 					params);
 		}
 
-        private boolean nullsOk() {
-            Theory annotation= fTestMethod.getMethod().getAnnotation(
-                    Theory.class);
-            return annotation != null && annotation.nullsAccepted();
-        }
+		private boolean nullsOk() {
+			Theory annotation= fTestMethod.getMethod().getAnnotation(
+					Theory.class);
+			return annotation != null && annotation.nullsAccepted();
+		}
 
 		protected void handleDataPointSuccess() {
 			successes++;
