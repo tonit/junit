@@ -14,6 +14,7 @@ import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.RunWith;
 
+@SuppressWarnings({"InfiniteLoopStatement"})
 public class WithOnlyTestAnnotations {
 	@RunWith(Theories.class)
 	public static class HonorExpectedException {

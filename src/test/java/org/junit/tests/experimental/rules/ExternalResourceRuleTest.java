@@ -16,12 +16,12 @@ public class ExternalResourceRuleTest {
 			@Override
 			protected void before() throws Throwable {
 				callSequence += "before ";
-			};
+			}
 			
 			@Override
 			protected void after() {
 				callSequence += "after ";
-			};
+			}
 		};
 		
 		@Test public void testFoo() {

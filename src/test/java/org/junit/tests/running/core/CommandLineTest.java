@@ -13,13 +13,12 @@ import org.junit.internal.RealSystem;
 import org.junit.runner.JUnitCore;
 
 public class CommandLineTest {
-	private ByteArrayOutputStream results;
 	private PrintStream oldOut;
 	private static boolean testWasRun;
 
 	@Before public void before() { 
 		oldOut= System.out;
-		results= new ByteArrayOutputStream();
+		ByteArrayOutputStream results= new ByteArrayOutputStream();
 		System.setOut(new PrintStream(results));
 	}
 
@@ -35,14 +34,14 @@ public class CommandLineTest {
 
 	@Test public void runATest() {
 		testWasRun= false; // todo create a TestSystem instead
-		new JUnitCore().runMain(new RealSystem(), new String[]{"org.junit.tests.running.core.CommandLineTest$Example"});
+		new JUnitCore().runMain(new RealSystem(), "org.junit.tests.running.core.CommandLineTest$Example");
 		assertTrue(testWasRun);
 	}
 	
 	@Test public void runAClass() {
 		testWasRun= false;
 		JUnitCore.runClasses(Example.class);
-		assertTrue(testWasRun);		
+		assertTrue(testWasRun);
 	}
 
 	private static int fCount;
@@ -52,16 +51,16 @@ public class CommandLineTest {
 			fCount++;
 		}
 	}
-	
+
 	@Test public void runTwoClassesAsArray() {
 		fCount= 0;
 		JUnitCore.runClasses(new Class[] {Count.class, Count.class});
-		assertEquals(2, fCount);		
+		assertEquals(2, fCount);
 	}
 
 	@Test public void runTwoClasses() {
 		fCount= 0;
 		JUnitCore.runClasses(Count.class, Count.class);
-		assertEquals(2, fCount);		
+		assertEquals(2, fCount);
 	}
 }

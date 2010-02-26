@@ -14,7 +14,6 @@ public class MoneyTest {
 	private Money f12CHF;
 	private Money f14CHF;
 	private Money f7USD;
-	private Money f21USD;
 
 	private IMoney fMB1;
 	private IMoney fMB2;
@@ -27,7 +26,7 @@ public class MoneyTest {
 		f12CHF= new Money(12, "CHF");
 		f14CHF= new Money(14, "CHF");
 		f7USD= new Money( 7, "USD");
-		f21USD= new Money(21, "USD");
+		Money f21USD=new Money(21, "USD");
 
 		fMB1= MoneyBag.create(f12CHF, f7USD);
 		fMB2= MoneyBag.create(f14CHF, f21USD);

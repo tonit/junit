@@ -60,7 +60,7 @@ public class RunNotifier {
 			protected void notifyListener(RunListener each) throws Exception {
 				each.testRunStarted(plan);
 				each.testRunStarted(plan.getDescription());
-			};
+			}
 		}.run();
 	}
 	
@@ -75,7 +75,7 @@ public class RunNotifier {
 			@Override
 			protected void notifyListener(RunListener each) throws Exception {
 				each.testRunStarted(description);
-			};
+			}
 		}.run();
 	}
 	
@@ -88,7 +88,7 @@ public class RunNotifier {
 			@Override
 			protected void notifyListener(RunListener each) throws Exception {
 				each.testRunFinished(result);
-			};
+			}
 		}.run();
 	}
 	
@@ -104,7 +104,7 @@ public class RunNotifier {
 			@Override
 			protected void notifyListener(RunListener each) throws Exception {
 				each.testStarted(description);
-			};
+			}
 		}.run();
 	}
 
@@ -117,7 +117,7 @@ public class RunNotifier {
 			@Override
 			protected void notifyListener(RunListener each) throws Exception {
 				each.testFailure(failure);
-			};
+			}
 		}.run();
 	}
 
@@ -134,7 +134,7 @@ public class RunNotifier {
 			@Override
 			protected void notifyListener(RunListener each) throws Exception {
 				each.testAssumptionFailure(failure);
-			};
+			}
 		}.run();
 	}
 
@@ -162,7 +162,7 @@ public class RunNotifier {
 			@Override
 			protected void notifyListener(RunListener each) throws Exception {
 				each.testFinished(description);
-			};
+			}
 		}.run();
 	}
 	

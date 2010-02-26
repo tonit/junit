@@ -32,7 +32,7 @@ class ClassRoadie {
 
 	protected void runUnprotected() {
 		fRunnable.run();
-	};
+	}
 
 	protected void addFailure(Throwable targetException) {
 		fNotifier.fireTestFailure(new Failure(fDescription, targetException));

@@ -77,7 +77,7 @@ public class WithExtendedParameterSources {
 		@DataPoints
 		public static String[] STRINGS() {
 			return new String[] { "A", "B" };
-		};
+		}
 
 		@Theory
 		public void addToLog(String string) {
@@ -99,7 +99,7 @@ public class WithExtendedParameterSources {
 		@DataPoints
 		public static String[] STRINGS() {
 			return new String[] { "A", "B" };
-		};
+		}
 
 		@DataPoints
 		public static String STRING() {

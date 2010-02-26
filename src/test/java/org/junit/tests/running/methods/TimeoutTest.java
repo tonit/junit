@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 
+@SuppressWarnings({"InfiniteLoopStatement"})
 public class TimeoutTest {
 	
 	static public class FailureWithTimeoutTest {
@@ -124,8 +125,7 @@ public class TimeoutTest {
 		JUnitCore core= new JUnitCore();
 		long startTime= System.currentTimeMillis();
 		core.run(clazz);
-		long totalTime = System.currentTimeMillis() - startTime;
-		return totalTime;
+		return System.currentTimeMillis() - startTime;
 	}
 
 	@Test public void stalledThreadAppearsInStackTrace() throws Exception {

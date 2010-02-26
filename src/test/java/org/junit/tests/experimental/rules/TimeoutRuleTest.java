@@ -11,6 +11,7 @@ import org.junit.rules.Timeout;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 
+@SuppressWarnings({"InfiniteLoopStatement"})
 public class TimeoutRuleTest {
 	public static class HasGlobalTimeout {
 		public static String log;

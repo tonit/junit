@@ -24,6 +24,8 @@ import org.junit.runners.model.RunnerBuilder;
 public class Suite extends ParentRunner<Runner> {
 	/**
 	 * Returns an empty suite.
+	 *
+	 * @return the empty suite
 	 */
 	public static Runner emptySuite() {
 		try {
@@ -61,7 +63,7 @@ public class Suite extends ParentRunner<Runner> {
 	 * 
 	 * @param klass the root class
 	 * @param builder builds runners for classes in the suite
-	 * @throws InitializationError
+	 * @throws InitializationError if there is a problem with the test classes
 	 */
 	public Suite(Class<?> klass, RunnerBuilder builder) throws InitializationError {
 		this(builder, klass, getAnnotatedClasses(klass));
@@ -73,7 +75,7 @@ public class Suite extends ParentRunner<Runner> {
 	 * 
 	 * @param builder builds runners for classes in the suite
 	 * @param classes the classes in the suite
-	 * @throws InitializationError 
+	 * @throws InitializationError if there is a problem with the test classes
 	 */
 	public Suite(RunnerBuilder builder, Class<?>[] classes) throws InitializationError {
 		this(null, builder.runners(null, classes));
@@ -83,7 +85,7 @@ public class Suite extends ParentRunner<Runner> {
 	 * Call this when the default builder is good enough. Left in for compatibility with JUnit 4.4.
 	 * @param klass the root of the suite
 	 * @param suiteClasses the classes in the suite
-	 * @throws InitializationError
+	 * @throws InitializationError if there is a problem with the test classes
 	 */
 	protected Suite(Class<?> klass, Class<?>[] suiteClasses) throws InitializationError {
 		this(new AllDefaultPossibilitiesBuilder(true), klass, suiteClasses);
@@ -95,7 +97,7 @@ public class Suite extends ParentRunner<Runner> {
 	 * @param builder builds runners for classes in the suite
 	 * @param klass the root of the suite
 	 * @param suiteClasses the classes in the suite
-	 * @throws InitializationError
+	 * @throws InitializationError if there is a problem with the test classes
 	 */
 	protected Suite(RunnerBuilder builder, Class<?> klass, Class<?>[] suiteClasses) throws InitializationError {
 		this(klass, builder.runners(klass, suiteClasses));
@@ -106,7 +108,7 @@ public class Suite extends ParentRunner<Runner> {
 	 * 
 	 * @param klass root of the suite
 	 * @param runners for each class in the suite, a {@link Runner}
-	 * @throws InitializationError 
+	 * @throws InitializationError if there is a problem with the test classes 
 	 */
 	protected Suite(Class<?> klass, List<Runner> runners) throws InitializationError {
 		super(klass);

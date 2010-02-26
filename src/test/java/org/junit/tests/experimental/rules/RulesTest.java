@@ -33,7 +33,7 @@ public class RulesTest {
 					public void evaluate() throws Throwable {
 						wasRun= true;
 						base.evaluate();
-					};
+					}
 				};
 			}
 		};
@@ -73,7 +73,7 @@ public class RulesTest {
 					public void evaluate() throws Throwable {
 						runCount++;
 						base.evaluate();
-					};
+					}
 				};
 			}
 		}

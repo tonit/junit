@@ -23,7 +23,7 @@ public class BadlyFormedClassesTest {
 			 * a JUnit test
 			 */
 		}
-	};
+	}
 
 	@RunWith(JUnit4ClassRunner.class)
 	public static class BadBeforeMethodWithLegacyRunner {
@@ -35,7 +35,7 @@ public class BadlyFormedClassesTest {
 		@Test
 		public void someTest() {
 		}
-	};
+	}
 
 	public static class NoTests {
 		// class without tests
@@ -62,7 +62,6 @@ public class BadlyFormedClassesTest {
 		JUnitCore core= new JUnitCore();
 		Result result= core.run(testClass);
 		Failure failure= result.getFailures().get(0);
-		String message= failure.getException().getMessage();
-		return message;
+		return failure.getException().getMessage();
 	}
 }

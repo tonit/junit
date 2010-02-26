@@ -118,8 +118,7 @@ public class Assignments {
 	private int getConstructorParameterCount() {
 		List<ParameterSignature> signatures= ParameterSignature
 				.signatures(fClass.getOnlyConstructor());
-		int constructorParameterCount= signatures.size();
-		return constructorParameterCount;
+		return signatures.size();
 	}
 
 	public Object[] getArgumentStrings(boolean nullsOk)
