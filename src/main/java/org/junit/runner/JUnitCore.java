@@ -57,7 +57,7 @@ public class JUnitCore {
 	/**
 	 * Run the tests contained in <code>classes</code>. Write feedback while the tests
 	 * are running and write stack traces for all failed tests after all tests complete. This is
-	 * similar to {@link #main(String[])}, but intended to be used programmatically.
+	 * similar to {@link #main(String...)}, but intended to be used programmatically.
 	 * @param computer Helps construct Runners from classes
 	 * @param classes Classes in which to find tests
 	 * @return a {@link Result} describing the details of the test run and the failed tests.
@@ -68,7 +68,7 @@ public class JUnitCore {
 	/**
 	 * Run the tests contained in <code>classes</code>. Write feedback while the tests
 	 * are running and write stack traces for all failed tests after all tests complete. This is
-	 * similar to {@link #main(String[])}, but intended to be used programmatically.
+	 * similar to {@link #main(String...)}, but intended to be used programmatically.
 	 * @param classes Classes in which to find tests
 	 * @return a {@link Result} describing the details of the test run and the failed tests.
 	 */
@@ -95,7 +95,7 @@ public class JUnitCore {
 			}
 		RunListener listener= new TextListener(system);
 		addListener(listener);
-		Result result= run(classes.toArray(new Class[0]));
+		Result result= run(classes.toArray(new Class[classes.size()]));
 		for (Failure each : missingClasses)
 			result.getFailures().add(each);
 		return result;

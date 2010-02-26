@@ -39,7 +39,7 @@ public class TestFailure  {
 	@Override
 	public String toString() {
 	    StringBuffer buffer= new StringBuffer();
-	    buffer.append(fFailedTest+": "+fThrownException.getMessage());
+		buffer.append(fFailedTest).append(": ").append(fThrownException.getMessage());
 	    return buffer.toString();
 	}
 	public String trace() {

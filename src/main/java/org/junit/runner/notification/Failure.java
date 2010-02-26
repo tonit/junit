@@ -50,9 +50,9 @@ public class Failure {
 
 	@Override
 	public String toString() {
-	    StringBuffer buffer= new StringBuffer();
-	    buffer.append(getTestHeader() + ": "+fThrownException.getMessage());
-	    return buffer.toString();
+		StringBuffer buffer= new StringBuffer();
+		buffer.append(getTestHeader()).append(": ").append(fThrownException.getMessage());
+		return buffer.toString();
 	}
 
 	/**
