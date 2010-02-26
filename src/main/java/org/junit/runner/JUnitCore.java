@@ -35,22 +35,27 @@ public class JUnitCore {
 	}
 
 	/**
-	 * Run the tests contained in the classes named in the <code>args</code>.
+	 * Run the tests contained in the classes named in the <code>arguments</code>.
 	 * If all tests run successfully, exit with a status of 0. Otherwise exit with a status of 1.
-	 * Write feedback while tests are running and write
-	 * stack traces for all failed tests after the tests all complete.
-	 * @param args names of classes in which to find tests to run
+	 * Write feedback while tests are running and write stack traces for all failed tests after
+	 * the tests all complete.
+	 *
+	 * @param arguments names of classes in which to find tests to run
 	 */
-	public static void main(String... args) {
-		runMainAndExit(new RealSystem(), args);
+	public static void main(String... arguments) {
+		runMainAndExit(new RealSystem(), arguments);
 	}
 
 	/**
-	 * Do not use. Testing purposes only.
-	 * @param system 
+	 * Do not use. Testing purposes only.  (called by {@link #main(String...)} using
+	 * {@link org.junit.internal.RealSystem}).  Exits with the status of 0 if the
+	 * tests were successful.
+	 *
+	 * @param system     the JUnitSystem to execute
+	 * @param arguments  the arguments to pass in to the system
 	 */
-	public static void runMainAndExit(JUnitSystem system, String... args) {
-		Result result= new JUnitCore().runMain(system, args);
+	public static void runMainAndExit(JUnitSystem system, String... arguments) {
+		Result result= new JUnitCore().runMain(system, arguments);
 		system.exit(result.wasSuccessful() ? 0 : 1);
 	}
 
@@ -58,6 +63,7 @@ public class JUnitCore {
 	 * Run the tests contained in <code>classes</code>. Write feedback while the tests
 	 * are running and write stack traces for all failed tests after all tests complete. This is
 	 * similar to {@link #main(String...)}, but intended to be used programmatically.
+	 *
 	 * @param computer Helps construct Runners from classes
 	 * @param classes Classes in which to find tests
 	 * @return a {@link Result} describing the details of the test run and the failed tests.
@@ -65,43 +71,54 @@ public class JUnitCore {
 	public static Result runClasses(Computer computer, Class<?>... classes) {
 		return new JUnitCore().run(computer, classes);
 	}
+
 	/**
 	 * Run the tests contained in <code>classes</code>. Write feedback while the tests
 	 * are running and write stack traces for all failed tests after all tests complete. This is
 	 * similar to {@link #main(String...)}, but intended to be used programmatically.
+	 *
 	 * @param classes Classes in which to find tests
 	 * @return a {@link Result} describing the details of the test run and the failed tests.
 	 */
 	public static Result runClasses(Class<?>... classes) {
 		return new JUnitCore().run(defaultComputer(), classes);
 	}
-	
+
 	/**
-	 * Do not use. Testing purposes only.
-	 * @param system 
+	 * Do not use. Testing purposes only.  (Called by {@link #runMainAndExit(JUnitSystem,String...)}).
+	 * Attempts to load the class in the arguments.  Classes that could not be loaded are recorded
+	 * as a failure.  Executes the tests with a {@link org.junit.internal.TextListener}.
+	 *
+	 * @param system     the JUnitSystem to run
+	 * @param arguments  the list of classes to run
+	 * @return the result of the failures
 	 */
-	public Result runMain(JUnitSystem system, String... args) {
+	public Result runMain(JUnitSystem system, String... arguments) {
 		system.out().println("JUnit version " + Version.id());
 		List<Class<?>> classes= new ArrayList<Class<?>>();
 		List<Failure> missingClasses= new ArrayList<Failure>();
-		for (String each : args)
+
+		for (String each : arguments)
 			try {
 				classes.add(Class.forName(each));
 			} catch (ClassNotFoundException e) {
 				system.out().println("Could not find class: " + each);
-				Description description= Description.createSuiteDescription(each);
-				Failure failure= new Failure(description, e);
+				Failure failure= new Failure(Description.createSuiteDescription(each), e);
 				missingClasses.add(failure);
 			}
-		RunListener listener= new TextListener(system);
-		addListener(listener);
+
+		addListener(new TextListener(system));
 		Result result= run(classes.toArray(new Class[classes.size()]));
-		for (Failure each : missingClasses)
+		for (Failure each : missingClasses) {
 			result.getFailures().add(each);
+		}
+
 		return result;
 	}
 
 	/**
+	 * Get the version number of this implementation of JUnit.
+	 *
 	 * @return the version number of this release
 	 */
 	public String getVersion() {
@@ -110,6 +127,7 @@ public class JUnitCore {
 	
 	/**
 	 * Run all the tests in <code>classes</code>.
+	 *
 	 * @param classes the classes containing tests
 	 * @return a {@link Result} describing the details of the test run and the failed tests.
 	 */
@@ -119,6 +137,7 @@ public class JUnitCore {
 
 	/**
 	 * Run all the tests in <code>classes</code>.
+	 *
 	 * @param computer Helps construct Runners from classes
 	 * @param classes the classes containing tests
 	 * @return a {@link Result} describing the details of the test run and the failed tests.
@@ -129,6 +148,7 @@ public class JUnitCore {
 
 	/**
 	 * Run all the tests contained in <code>request</code>.
+	 *
 	 * @param request the request describing tests
 	 * @return a {@link Result} describing the details of the test run and the failed tests.
 	 */
@@ -138,13 +158,14 @@ public class JUnitCore {
 
 	/**
 	 * Run all the tests contained in JUnit 3.8.x <code>test</code>. Here for backward compatibility.
+	 *
 	 * @param test the old-style test
 	 * @return a {@link Result} describing the details of the test run and the failed tests.
 	 */
 	public Result run(junit.framework.Test test) { 
 		return run(new JUnit38ClassRunner(test));
 	}
-	
+
 	/**
 	 * Do not use. Testing purposes only.
 	 */
@@ -164,6 +185,7 @@ public class JUnitCore {
 	
 	/**
 	 * Add a listener to be notified as the tests run.
+	 *
 	 * @param listener the listener to add
 	 * @see org.junit.runner.notification.RunListener
 	 */
@@ -173,12 +195,18 @@ public class JUnitCore {
 
 	/**
 	 * Remove a listener.
+	 *
 	 * @param listener the listener to remove
 	 */
 	public void removeListener(RunListener listener) {
 		fNotifier.removeListener(listener);
 	}
-	
+
+	/**
+	 * Create a new Computer instance.
+	 *
+	 * @return a new default computer
+	 */
 	static Computer defaultComputer() {
 		return new Computer();
 	}

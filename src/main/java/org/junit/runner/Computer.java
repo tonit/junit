@@ -6,8 +6,9 @@ import org.junit.runners.model.RunnerBuilder;
 
 /**
  * Represents a strategy for computing runners and suites.
- * WARNING: this class is very likely to undergo serious changes in version 4.8 and
- * beyond.
+ *
+ * <strong><em>WARNING:</em></strong> this class is very likely
+ * to undergo serious changes in version 4.8 and beyond.
  */
 public class Computer {
 	/**
