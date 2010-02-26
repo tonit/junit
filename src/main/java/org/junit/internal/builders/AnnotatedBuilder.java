@@ -29,12 +29,12 @@ public class AnnotatedBuilder extends RunnerBuilder {
 			Class<?> testClass) throws Exception {
 		try {
 			return runnerClass.getConstructor(Class.class).newInstance(
-					new Object[] { testClass });
+					testClass);
 		} catch (NoSuchMethodException e) {
 			try {
 				return runnerClass.getConstructor(Class.class,
 						RunnerBuilder.class).newInstance(
-						new Object[] { testClass, fSuiteBuilder });
+						testClass, fSuiteBuilder);
 			} catch (NoSuchMethodException e2) {
 				String simpleName= runnerClass.getSimpleName();
 				throw new InitializationError(String.format(
