@@ -1,7 +1,6 @@
 /**
  * Provides standard {@link org.junit.runner.Runner Runner} implementations.  These runners
  * enable different sets of functionality:
- *
  * <ul>
  * <li>{@link JUnit4} - standard JUnit 4 tests, this is the default runner so you don't
  *    have to specify it directly.</li>
