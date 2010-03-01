@@ -14,7 +14,7 @@
  *   <li>{@link @Before} - called just before each test</li>
  *   <li>{@link @Test} - the actual test method</li>
  *   <li>{@link @After} - called just after each test</li>
- *   </li>{@link @AfterClass} - called at the end of the test case</li>
+ *   <li>{@link @AfterClass} - called at the end of the test case</li>
  * </ol>
  *
  * {@link @Rule} members all represent an {@link MethodRule}, which is applied to
