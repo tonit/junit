@@ -20,11 +20,6 @@ import org.junit.runner.notification.RunNotifier;
  */
 public abstract class Runner implements Describable {
 	private Description fParent = null;
-	
-	/* (non-Javadoc)
-	 * @see org.junit.runner.Describable#getDescription()
-	 */
-	public abstract Description getDescription();
 
 	/**
 	 * Run the tests for this runner.
