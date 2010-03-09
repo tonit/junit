@@ -3,6 +3,14 @@
  */
 package org.junit.experimental.theories;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.experimental.theories.PotentialAssignment.CouldNotGenerateValueException;
 import org.junit.experimental.theories.internal.Assignments;
@@ -13,14 +21,6 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 import org.junit.runners.model.TestClass;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Theories allow you to perform tests that ensure contracts or consistent
